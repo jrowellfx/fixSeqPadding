@@ -36,8 +36,26 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# renum - renumber images sequences on the command line
-#         specify the sequences using lsseq's native format
+# fixseqpadding - In the unusual case that the padding gets messed up
+#         for an image-sequence, this utility will help you fix it.
+#         The command-line util 'renumseq' requires that any sequence
+#         be numbered with correct padding for it to work properly.
+#
+#         This only happened once in all the years I've beeng doing
+#         CG post production. Inconsistent extra zeros (but not padded)
+#         got tacked on to the begining of some sequences on a job that
+#         I was working on (and needed to use renumseq on).
+#
+#         I took care of the bad padding on the spot with some adhoc
+#         scripts, but was upset that my renumseq command wouldn't 
+#         gracefully handle that situation.
+#
+#         I started adding the ability to fix bad padding to renumseq,
+#         (Which led me to add the new error-listing capabilities of
+#         'lsseq --showBadPadding', which has been implemented!)
+#         but renumseq started to get too ugly and didn't fit the tool.
+#         That led me to the conclusion to just write this tool.
+#                                                  James Rowell.
 
 import re
 import argparse
@@ -84,9 +102,10 @@ def main():
         of the smallest index specified \
         in the SEQ argument \
         or if --pad has been specified then use PAD digits. \
-        The list of badly padded frames can easily be copied from the output of the \
-        utility 'lsseq' using its --showBadPadding option. \
-        Append '--' before the list of SEQs to delineate the end of the options")
+        The list of badly padded frames can easily be copied from the output of \
+        'lsseq --showBadPadding'. \
+        Protip: Append '--' before the list of SEQs to delineate the end of the options if need be")
+    #
     # Note: the following default for "pad" of "-1" means to leave
     # the padding on any given frame sequence unchanged.
     #
@@ -96,8 +115,8 @@ def main():
         help="force the padding of the fixed frame numbers to be PAD digits.")
     p.add_argument("--dryRun", action="store_true",
         dest="dryRun", default=False,
-        help="Don't renumber SEQ, just display how the \
-        files would have been renumbered. Forces --verbose and disables --silent" )
+        help="Don't fix the padding for SEQ, just display how the \
+        files would have been renamed. Forces --verbose and disables --silent" )
     p.add_argument("--silent", "--quiet", "-s", action="store_true",
         dest="silent", default=False,
         help="suppress all output, warning etc.")
