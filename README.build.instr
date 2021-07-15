@@ -1,0 +1,44 @@
+cd $HOME
+
+# First step if not done yet.
+    python3 -m venv venv
+    source venv/bin/activate
+    python3 -m pip install --upgrade pip setuptools wheel
+    python3 -m pip install --upgrade build
+    python3 -m pip install --upgrade twine
+# else
+    source venv/bin/activate
+
+# For testing before building.
+# 
+pip install seqLister
+#
+# Then make sure this is the opening 'shebang' line in __main__.py
+# '#!/usr/bin/env python3'
+# Then, in the 'tests' directory in this repo.
+cd <dirWithGitRepos>/renumSeq/tests
+ln -s ../fixseqpadding/__main__.py fixseqpadding
+# Then you can use tests/fixseqpadding to test while modifying
+# and debugging the code.
+
+cd <dirWithGitRepos>/renumSeq
+
+python3 -m build
+
+# Change next line to whatever latest version is. Then use
+# __token__ and password for PyPi account.
+# ...or not needed if .pypirc is installed in $HOME
+#
+python3 -m twine upload --repository pypi dist/renumSeq-1.1.0*
+
+# Install it,
+    python3 -m pip install renumSeq
+# or update it.
+    python3 -m pip install renumSeq --upgrade
+
+# Test installation.
+#
+cd tests
+./test_renum
+diff test_renum.out test_renum.out.new
+
