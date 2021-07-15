@@ -2,6 +2,7 @@
 export TEST_DIR=`pwd`
 pushd $HOME
 source venv/bin/activate
+pip install seqLister --upgrade
 popd
 ln -sf ../fixSeqPadding/__main__.py fixseqpadding
 export PATH="$TEST_DIR:$PATH"
