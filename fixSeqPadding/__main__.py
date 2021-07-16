@@ -61,6 +61,9 @@ import re
 import argparse
 import os, sys
 import textwrap
+# import pathlib
+import glob
+
 import seqLister
 
 VERSION = "0.0.1"
@@ -73,7 +76,7 @@ def warnSeqSyntax(silent, basename, seq) :
 
 def main():
 
-    fixPadFrameList = []
+    fixNumList = []
 
 
     # Redefine the exception handling routine so that it does NOT
@@ -113,6 +116,17 @@ def main():
         dest="pad", default=-1,
         metavar="PAD",
         help="force the padding of the fixed frame numbers to be PAD digits.")
+    p.add_argument("--skip", action="store_false",
+        dest="clobber", default=False,
+        help="if fixing the padding of a frame in the SEQ would result in overwriting \
+        an existing frame with a correctly padded name \
+        then skip renaming the frame and print a warning. \
+        The opposite of --force. [default]")
+    p.add_argument("--force", action="store_true",
+        dest="clobber",
+        help="if fixing the padding of a frame in the SEQ would result in overwriting \
+        an existing frame with a correctly padded name \
+        then overwrite the frame. The opposite of --skip.")
     p.add_argument("--dryRun", action="store_true",
         dest="dryRun", default=False,
         help="Don't fix the padding for SEQ, just display how the \
@@ -140,8 +154,8 @@ def main():
         simpleBadPadList = []
         for a in args.badFrameList :
             simpleBadPadList.extend(a.replace(",", " ").split()) # Splits commas AND spaces.
-        fixPadFrameList = seqLister.expandSeq(simpleBadPadList, cruftList)
-        if len(fixPadFrameList) == 0 :
+        fixNumList = seqLister.expandSeq(simpleBadPadList, cruftList)
+        if len(fixNumList) == 0 :
             if not args.silent :
                 print(os.path.basename(sys.argv[0]),
                     ": error: invalid bad-padding list, use seqLister syntax",
@@ -157,7 +171,7 @@ def main():
         #
         # Over-ride all other options that could change the filenames.
         #
-        fixPadFrameList.sort() # To make for nicer verbose output later.
+        fixNumList.sort() # To make for nicer verbose output later.
 
     else : # No bad frames to fix were listed
         if not args.silent :
@@ -197,8 +211,8 @@ def main():
 
         v = match.groups()
 
-        usesUnderscore = (v[1] == '_')
         seq = [v[0], v[2], v[3]] # base filename, range, file-extension.
+        separator = v[1]
 
         # seq might be range with neg numbers. Assume N,M >= 0,
         # then there are only 5 seq cases that we need to be
@@ -265,25 +279,6 @@ def main():
             warnSeqSyntax(args.silent, seq[0], seq[1])
             continue
 
-        # If args.startFrame is used, it will override 
-        # args.offsetFrames.
-        #
-        if args.startFrame != NEVER_START_FRAME :
-            args.offsetFrames = args.startFrame - start
-
-            # This duplicates the test above (**a**) because now
-            # we might have a zero offset for this sequence.
-            # Instead of exiting we just skip to the next seq.
-            #
-            if args.offsetFrames == 0 \
-                    and args.pad < 0 \
-                    and not args.fixUnderscore :
-                if not args.silent :
-                    print(os.path.basename(sys.argv[0]),
-                        ": warning: no offset, no padding/underscore change, skipping sequence: ",
-                        arg, file=sys.stderr, sep='')
-                continue
-
         startPad = len(startStr)
         if negStart < 0.0 :
             startPad += 1
@@ -301,49 +296,21 @@ def main():
         if args.pad >= 0 :
             newPad = args.pad
 
-        currentFormatStr = "{0:0=-" + str(currentPad) + "d}"
+        ## currentFormatStr = "{0:0=-" + str(currentPad) + "d}"
         newFormatStr = "{0:0=-" + str(newPad) + "d}"
 
-        frameList = seqLister.expandSeq(seq[1])
+        allSeqFiles = glob.glob(seq[0] + separator + "*[0-9]." + seq[2])
+        for fnum in fixNumList : # Each frame number with bad padding
+            badFrameMatchList = []
+            for file in allSeqFiles :
+                if re.search('.*' + separator + '-?0+' + str(fnum) + '\\.' + seq[2] + '$', file) :
+                    badFrameMatchList.append(file)
+            print(badFrameMatchList)
 
-        if frameList == [] :
-            warnSeqSyntax(args.silent, seq[0], seq[1])
-            continue # Invalid syntax for range
+if __name__ == '__main__':
+    main()
 
-        frameList.sort(reverse=(args.offsetFrames > 0))
-
-        origNames = []
-        newNames = []
-        checkNames = []
-
-        if usesUnderscore :
-            currentSeparator = '_'
-            if args.fixUnderscore :
-                newSeparator = '.'
-            else :
-                newSeparator = '_'
-        else :
-            currentSeparator = '.'
-            newSeparator = '.'
-
-        # The following logic won't create properly named files if they have "bad padding",
-        # e.g. 02, 03, 04, ..., 0998, 0999, 1000, 1001, or any other such badly
-        # padded sequence. Note that the example above, should strictly be two padded,
-        # not four padded.
-        #
-        for i in frameList :
-            origFile = seq[0] + currentSeparator + currentFormatStr.format(i) + '.' + seq[2]
-            if os.path.exists(origFile) :
-                origNames.append(origFile)
-                newNames.append(seq[0] + newSeparator + newFormatStr.format(i+args.offsetFrames) \
-                    + '.' + seq[2])
-
-        if origNames == [] :
-            if not args.silent :
-                print(os.path.basename(sys.argv[0]), ": warning: ", arg,
-                    " is nonexistent", file=sys.stderr, sep='')
-            continue
-
+'''
         if not args.clobber :
             checkNames = [ x for x in newNames if x not in origNames ]
 
@@ -360,14 +327,6 @@ def main():
                         f, file=sys.stderr, sep='')
                 continue
 
-        # Note: there will be at least one entry in list so the following test catches
-        # the case missed by the test above (**a**). This case will be missed above if
-        # the pad size was explicitly specificed but is already the same as the existing sequence.
-        #
-        # JPR? But some of the files might be the same? if we're ONLY adding padding, but some
-        # don't need to be padded? Like turning two padded into four padded if the range is 1,2000? That is,
-        # 1000,2000 would not have any change.
-        #
         if origNames[0] == newNames[0] :
             if not args.silent :
                 print(os.path.basename(sys.argv[0]),
@@ -382,12 +341,5 @@ def main():
                 print(origNames[i], " -> ", newNames[i], sep='')
             if not args.dryRun :
                 os.rename(origNames[i], newNames[i])
-                if touchFiles :
-                    if touchTime == 0.0 :
-                        os.utime(newNames[i])
-                    else :
-                        os.utime(newNames[i], (touchTime, touchTime))
             i += 1
-
-if __name__ == '__main__':
-    main()
+'''
