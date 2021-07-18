@@ -16,12 +16,12 @@ pip install seqLister
 # Then make sure this is the opening 'shebang' line in __main__.py
 # '#!/usr/bin/env python3'
 # Then, in the 'tests' directory in this repo.
-cd <dirWithGitRepos>/renumSeq/tests
+cd <dirWithGitRepos>/fixSeqPadding/tests
 ln -s ../fixseqpadding/__main__.py fixseqpadding
 # Then you can use tests/fixseqpadding to test while modifying
 # and debugging the code.
 
-cd <dirWithGitRepos>/renumSeq
+cd <dirWithGitRepos>/fixSeqPadding
 
 python3 -m build
 
@@ -29,12 +29,12 @@ python3 -m build
 # __token__ and password for PyPi account.
 # ...or not needed if .pypirc is installed in $HOME
 #
-python3 -m twine upload --repository pypi dist/renumSeq-1.1.0*
+python3 -m twine upload --repository pypi dist/fixSeqPadding-1.1.0*
 
 # Install it,
-    python3 -m pip install renumSeq
+    python3 -m pip install fixSeqPadding
 # or update it.
-    python3 -m pip install renumSeq --upgrade
+    python3 -m pip install fixSeqPadding --upgrade
 
 # Test installation.
 #
