@@ -77,7 +77,7 @@ def warnSeqSyntax(silent, basename, seq) :
 def main():
 
     fixNumList = []
-
+    FIX_FULL_SEQ = True
 
     # Redefine the exception handling routine so that it does NOT
     # do a trace dump if the user types ^C while the program is running.
@@ -93,7 +93,10 @@ def main():
     p = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent('''
-            Fix badly padded frames in an image-sequence.
+            Attempt to fix all the badly-padded frames in SEQ, otherwise try
+            to fix only those listed with --fix. The pad size is determined
+            by the padding of the smallest index specified in the SEQ argument
+            or if --pad has been specified then force use of PAD digits.
             '''),
         usage="%(prog)s [OPTION]... [SEQ]...")
 
@@ -101,12 +104,6 @@ def main():
     p.add_argument("--fix", action="store",
         dest="badFrameList", default=[], nargs='+', metavar="FRAME_SEQ_LIST",
         help="Fix bad-padding for frames listed in FRAME_SEQ_LIST. \
-        The pad size is determined by the padding \
-        of the smallest index specified \
-        in the SEQ argument \
-        or if --pad has been specified then use PAD digits. \
-        The list of badly padded frames can easily be copied from the output of \
-        'lsseq --showBadPadding'. \
         Protip: Append '--' before the list of SEQs to delineate the end of the options if need be")
     #
     # Note: the following default for "pad" of "-1" means to leave
@@ -116,6 +113,7 @@ def main():
         dest="pad", default=-1,
         metavar="PAD",
         help="force the padding of the fixed frame numbers to be PAD digits.")
+    '''
     p.add_argument("--skip", action="store_false",
         dest="clobber", default=False,
         help="if fixing the padding of a frame in the SEQ would result in overwriting \
@@ -127,13 +125,14 @@ def main():
         help="if fixing the padding of a frame in the SEQ would result in overwriting \
         an existing frame with a correctly padded name \
         then overwrite the frame. The opposite of --skip.")
+    '''
     p.add_argument("--dryRun", action="store_true",
         dest="dryRun", default=False,
         help="Don't fix the padding for SEQ, just display how the \
-        files would have been renamed. Forces --verbose and disables --silent" )
+        files would have been renamed. Forces --verbose" )
     p.add_argument("--silent", "--quiet", "-s", action="store_true",
         dest="silent", default=False,
-        help="suppress all output, warning etc.")
+        help="suppress warnings and errors")
     p.add_argument("--verbose", "-v", action="store_true",
         dest="verbose", default=False,
         help="list the mapping from old file-name to new file-name")
@@ -150,6 +149,7 @@ def main():
     # (otherwise argparser throws an error for the user and exits.)
     # 
     if len(args.badFrameList) > 0 :
+        FIX_FULL_SEQ = False
         cruftList = []
         simpleBadPadList = []
         for a in args.badFrameList :
@@ -173,28 +173,31 @@ def main():
         #
         fixNumList.sort() # To make for nicer verbose output later.
 
+    '''
     else : # No bad frames to fix were listed
         if not args.silent :
             print(os.path.basename(sys.argv[0]),
                 ": warning: nothing to do, please specify bad frames with --fix option",
                 file=sys.stderr, sep='')
         sys.exit(0)
+    '''
 
     if args.dryRun : # verbose to show how renumbering would occur.
         args.verbose = True
-        args.silent = False
 
     # The following regular expression is created to match lsseq native sequence syntax
-    # which means (number labels refer to parenthesis groupings):
+    # which means (number labels refer to parenthesis groupings **):
     #
     # 0 - one or more of anything,           followed by
     # 1 - a dot or underscore,               followed by
     #     an open square bracket,            followed by
-    # 2 - one or more digits or minus signs, followed by
+    # 2 - a frame range,                     followed by
     #     a close square bracket then a dot, followed by
-    # 3 - one or more letters or digits (starting with a letter)
+    # 3 - one or more letters, optionally one dot,
+    #     then one or more letters, then one or more letters and numbers
+    #     and the end of the line.
     #
-    pattern = re.compile(r"(.+)([._])\[([0-9-]+)\]\.([a-zA-Z]+[a-zA-Z0-9]*)")
+    pattern = re.compile(r"(.+)([._])\[(-?[0-9]+--?[0-9]+)\]\.([a-zA-Z]+\.?[a-zA-Z]+[a-zA-Z0-9]*$)")
 
     for arg in args.files :
         abortSeq = False
@@ -211,7 +214,7 @@ def main():
 
         v = match.groups()
 
-        seq = [v[0], v[2], v[3]] # base filename, range, file-extension.
+        seq = [v[0], v[2], v[3]] # base filename, range, file-extension. (see above **)
         separator = v[1]
 
         # seq might be range with neg numbers. Assume N,M >= 0,
@@ -296,16 +299,60 @@ def main():
         if args.pad >= 0 :
             newPad = args.pad
 
-        ## currentFormatStr = "{0:0=-" + str(currentPad) + "d}"
-        newFormatStr = "{0:0=-" + str(newPad) + "d}"
+        correctFormatStr = "{0:0=-" + str(newPad) + "d}"
+
+        if FIX_FULL_SEQ :
+            fixNumList = list(range(int(start), int(end)+1))
 
         allSeqFiles = glob.glob(seq[0] + separator + "*[0-9]." + seq[2])
-        for fnum in fixNumList : # Each frame number with bad padding
-            badFrameMatchList = []
+        origNames = []
+        newNames = []
+        for fnum in fixNumList :
+            fnumMatchList = []
             for file in allSeqFiles :
-                if re.search('.*' + separator + '-?0+' + str(fnum) + '\\.' + seq[2] + '$', file) :
-                    badFrameMatchList.append(file)
-            print(badFrameMatchList)
+                if re.search('.*' + separator + '-?0*' + str(fnum) + '\\.' + seq[2] + '$', file) :
+                    fnumMatchList.append(file)
+
+            # Zero len means no corresp file for fnum, so only do something if non-zero
+            #
+            if len(fnumMatchList) > 0 :
+
+                correctName = seq[0] + separator + correctFormatStr.format(fnum) + '.' + seq[2]
+
+                # Do nothing if the name is already correct, but print
+                # WARNING if there's more than one file with that fnum.
+                #
+                if (correctName in fnumMatchList) : 
+                    if len(fnumMatchList) > 1 and not args.silent :
+                        sys.stdout.flush()
+                        sys.stderr.flush()
+                        print(os.path.basename(sys.argv[0]), ": warning: ", correctName,
+                            " exists but there is a duplicate frame number ", fnum,
+                            " with different padding",
+                            file=sys.stderr, sep='')
+                        sys.stderr.flush()
+                else :
+                    # Ambiguous - which file to repad?
+                    #
+                    if len(fnumMatchList) > 1 and not args.silent :
+                        sys.stdout.flush()
+                        sys.stderr.flush()
+                        print(os.path.basename(sys.argv[0]), ": warning: ", correctName,
+                            " has multiple files with bad-padding. Ambiguous rename. Skipping",
+                            file=sys.stderr, sep='')
+                        sys.stderr.flush()
+                    else :
+                        origNames.append(fnumMatchList[0])
+                        newNames.append(correctName)
+
+        i = 0
+        numFiles = len(origNames)
+        while i < numFiles :
+            if args.verbose :
+                print(origNames[i], " -> ", newNames[i], sep='')
+            if not args.dryRun :
+                os.rename(origNames[i], newNames[i])
+            i += 1
 
 if __name__ == '__main__':
     main()
@@ -334,12 +381,4 @@ if __name__ == '__main__':
                     file=sys.stderr, sep='')
             continue
 
-        i = 0
-        numFiles = len(origNames)
-        while i < numFiles :
-            if args.verbose and not args.silent :
-                print(origNames[i], " -> ", newNames[i], sep='')
-            if not args.dryRun :
-                os.rename(origNames[i], newNames[i])
-            i += 1
 '''

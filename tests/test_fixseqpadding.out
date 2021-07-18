@@ -1,0 +1,31 @@
+------ Begin Tests ------
+
+--- Test 1 --- dir:. --- lsseq --version ---
+2.4.3
+
+--- Test 2 --- dir:. --- lsseq -RPl --noErrorLists -g -m ---
+lsseq: warning: a.0119.jpg is a duplicate (with different padding) of frame number: 119
+lsseq: warning: a.00124.jpg is a duplicate (with different padding) of frame number: 124
+lsseq: warning: a.00130.jpg is a duplicate (with different padding) of frame number: 130
+./a01/a.[0100-0140].jpg m:[101,134-139], p:[102-105,119,130-133,140]
+./a02/a.[0100-0125].jpg m:[105,121-124]
+./a03/a.[0100-0133].jpg m:[101]
+
+--- Test 3 --- dir:a01 --- lsseq --silent -n -g -m ---
+a.[0100-0140].jpg m:[101,134-139], p:[102-105,119,130-133,140]
+
+--- Test 4 --- dir:a01 --- fixseqpadding --verbose a.[0100-0140].jpg ---
+fixseqpadding: warning: a.0119.jpg exists but there is a duplicate frame number 119 with different padding
+fixseqpadding: warning: a.0124.jpg exists but there is a duplicate frame number 124 with different padding
+fixseqpadding: warning: a.0130.jpg has multiple files with bad-padding. Ambiguous rename. Skipping
+a.102.jpg -> a.0102.jpg
+a.103.jpg -> a.0103.jpg
+a.104.jpg -> a.0104.jpg
+a.105.jpg -> a.0105.jpg
+a.00131.jpg -> a.0131.jpg
+a.00132.jpg -> a.0132.jpg
+a.00133.jpg -> a.0133.jpg
+a.00140.jpg -> a.0140.jpg
+
+--- Test 5 --- dir:a01 --- lsseq --silent -n -g -m ---
+a.[0100-0140].jpg m:[101,134-139], p:[119,130]
