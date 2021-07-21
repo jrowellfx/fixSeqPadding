@@ -12,12 +12,10 @@ if [[ `basename $TEST_DIR` != 'tests' ]]; then
     exit 1
 fi
 
-ln -sf ../fixSeqPadding/__main__.py  fixseqpadding
+ln -sf ../fixseqpadding/__main__.py  fixseqpadding
 
 if [[ ! ":$PATH:" == *":$TEST_DIR:"* ]]; then
     export PATH="$TEST_DIR:$PATH"
-    # echo \# Run the following command once to help live testing.
-    # echo export PATH=\"$TEST_DIR:\$PATH\"
 fi
 
 export REPO_DIR=`dirname $TEST_DIR`
@@ -66,6 +64,8 @@ touch `cat createTestData/create.?Test.files`
 #
 find testdir -type f -exec touch -t 199201121330 \{\} \;
 
+## exit 0
+
 # The following are tests. One test per line.
 # The first item on a line is the directory relative to
 #     $TEST_DIR/testdir to run the test in.
@@ -74,10 +74,30 @@ find testdir -type f -exec touch -t 199201121330 \{\} \;
 #
 cat << EOF > $tmpArgs
 .   lsseq --version                         # Double check which version being used for this test.
+.   fixseqpadding --version                         # Double check which version being used for this test.
 .   lsseq -RPl --noErrorLists -g -m         # List all sequences in the testdir
-a01 lsseq --silent -n -g -m
+a01 ls -1
+a01 lsseq -n -g -m
 a01 fixseqpadding --verbose a.[0100-0140].jpg
-a01 lsseq --silent -n -g -m
+a01 lsseq -n -g -m
+a01 ls -1
+a02 lsseq -g
+a02 fixseqpadding --verbose a.[100-125].jpg
+a02 lsseq -g
+a03 lsseq -g
+a03 fixseqpadding --pad 4 --verbose a.[100-125].jpg
+a03 lsseq -g
+. ls -1 b01
+. lsseq -n -g -m b01
+. fixseqpadding --verbose b01/b.[0100-0140].jpg
+. lsseq -n -g -m b01
+. ls -1 b02
+. lsseq -g b02
+. fixseqpadding --verbose b02/b.[100-125].jpg
+. lsseq -g b02
+. lsseq -g b03
+. fixseqpadding --pad 4 --verbose b03/b.[100-125].jpg
+. lsseq -g b03
 EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`

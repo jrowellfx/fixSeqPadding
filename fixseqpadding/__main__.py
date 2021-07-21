@@ -52,9 +52,9 @@
 #
 #         I started adding the ability to fix bad padding to renumseq,
 #         (Which led me to add the new error-listing capabilities of
-#         'lsseq --showBadPadding', which has been implemented!)
-#         but renumseq started to get too ugly and didn't fit the tool.
-#         That led me to the conclusion to just write this tool.
+#         'lsseq --showBadPadding') but renumseq started to get too
+#         ugly with the added functionality and didn't fit the tool.
+#         That led me to the conclusion to just write this util instead.
 #                                                  James Rowell.
 
 import re
@@ -66,11 +66,11 @@ import glob
 
 import seqLister
 
-VERSION = "0.0.1"
+VERSION = "1.0.0"
 
 def warnSeqSyntax(silent, basename, seq) :
     if not silent :
-        print( os.path.basename(sys.argv[0]),
+        print(os.path.basename(sys.argv[0]),
             ": warning: invalid range [", seq, "] for seq ", basename,
             file=sys.stderr, sep='')
 
@@ -173,15 +173,6 @@ def main():
         #
         fixNumList.sort() # To make for nicer verbose output later.
 
-    '''
-    else : # No bad frames to fix were listed
-        if not args.silent :
-            print(os.path.basename(sys.argv[0]),
-                ": warning: nothing to do, please specify bad frames with --fix option",
-                file=sys.stderr, sep='')
-        sys.exit(0)
-    '''
-
     if args.dryRun : # verbose to show how renumbering would occur.
         args.verbose = True
 
@@ -197,7 +188,7 @@ def main():
     #     then one or more letters, then one or more letters and numbers
     #     and the end of the line.
     #
-    pattern = re.compile(r"(.+)([._])\[(-?[0-9]+--?[0-9]+)\]\.([a-zA-Z]+\.?[a-zA-Z]+[a-zA-Z0-9]*$)")
+    pattern = re.compile(r"(.+)([._])\[(-?[0-9]+-?-?[0-9]+)\]\.([a-zA-Z]+\.?[a-zA-Z]+[a-zA-Z0-9]*$)")
 
     for arg in args.files :
         abortSeq = False
@@ -338,7 +329,7 @@ def main():
                         sys.stdout.flush()
                         sys.stderr.flush()
                         print(os.path.basename(sys.argv[0]), ": warning: ", correctName,
-                            " has multiple files with bad-padding. Ambiguous rename. Skipping",
+                            " corresponds to multiple files with bad-padding. Ambiguous rename. Skipping",
                             file=sys.stderr, sep='')
                         sys.stderr.flush()
                     else :
@@ -356,29 +347,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-'''
-        if not args.clobber :
-            checkNames = [ x for x in newNames if x not in origNames ]
-
-            f = ""
-            for f in checkNames :
-                if os.path.exists(f) :
-                    abortSeq = True
-                    break
-
-            if abortSeq :
-                if not args.silent :
-                    print(os.path.basename(sys.argv[0]), ": warning: skipping ", arg,
-                        ": renum would have overwritten a file outside the sequence being renumbered. e.g.: ",
-                        f, file=sys.stderr, sep='')
-                continue
-
-        if origNames[0] == newNames[0] :
-            if not args.silent :
-                print(os.path.basename(sys.argv[0]),
-                    ": warning: no changes being made to ", arg, ": skipping",
-                    file=sys.stderr, sep='')
-            continue
-
-'''

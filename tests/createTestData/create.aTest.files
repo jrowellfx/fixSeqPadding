@@ -36,11 +36,12 @@ testdir/a01/a.00132.jpg
 testdir/a01/a.00133.jpg
 testdir/a01/a.00140.jpg
 
-testdir/a02/a.0100.jpg
+testdir/a02/a.100.jpg
 testdir/a02/a.0101.jpg
 testdir/a02/a.0102.jpg
 testdir/a02/a.0103.jpg
 testdir/a02/a.0104.jpg
+testdir/a02/a.0105.jpg
 testdir/a02/a.0106.jpg
 testdir/a02/a.0107.jpg
 testdir/a02/a.0108.jpg
@@ -56,9 +57,14 @@ testdir/a02/a.0117.jpg
 testdir/a02/a.0118.jpg
 testdir/a02/a.0119.jpg
 testdir/a02/a.0120.jpg
+testdir/a02/a.0121.jpg
+testdir/a02/a.0122.jpg
+testdir/a02/a.0123.jpg
+testdir/a02/a.0124.jpg
 testdir/a02/a.0125.jpg
 
-testdir/a03/a.0100.jpg
+testdir/a03/a.100.jpg
+testdir/a03/a.0101.jpg
 testdir/a03/a.0102.jpg
 testdir/a03/a.0103.jpg
 testdir/a03/a.0104.jpg
@@ -77,17 +83,9 @@ testdir/a03/a.0116.jpg
 testdir/a03/a.0117.jpg
 testdir/a03/a.0118.jpg
 testdir/a03/a.0119.jpg
-testdir/a03/a.0120.jpg
+testdir/a03/a.00120.jpg
 testdir/a03/a.0121.jpg
 testdir/a03/a.0122.jpg
 testdir/a03/a.0123.jpg
 testdir/a03/a.0124.jpg
-testdir/a03/a.0125.jpg
-testdir/a03/a.0126.jpg
-testdir/a03/a.0127.jpg
-testdir/a03/a.0128.jpg
-testdir/a03/a.0129.jpg
-testdir/a03/a.0130.jpg
-testdir/a03/a.0131.jpg
-testdir/a03/a.0132.jpg
-testdir/a03/a.0133.jpg
+testdir/a03/a.00125.jpg
