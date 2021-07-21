@@ -66,7 +66,7 @@ import glob
 
 import seqLister
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 def warnSeqSyntax(silent, basename, seq) :
     if not silent :

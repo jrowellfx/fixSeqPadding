@@ -8,7 +8,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name            = 'fixSeqPadding',
-    version         = '1.0.0',
+    version         = '1.0.1',
     description='Tool to repair bad padding in image-sequences.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -31,7 +31,7 @@ setup(
 
     entry_points = {
         'console_scripts': [
-            'fixseqpadding = fixSeqPadding.__main__:main',
+            'fixseqpadding = fixseqpadding.__main__:main',
         ]
     }
 )

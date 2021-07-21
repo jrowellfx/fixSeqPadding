@@ -4,7 +4,7 @@
 2.4.4
 
 --- Test 2 --- dir:. --- fixseqpadding --version ---
-1.0.0
+1.0.1
 
 --- Test 3 --- dir:. --- lsseq -RPl --noErrorLists -g -m ---
 lsseq: warning: ./a01/a.0119.jpg is a duplicate (with different padding) of frame number: 119
