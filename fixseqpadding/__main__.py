@@ -68,9 +68,11 @@ import seqLister
 
 VERSION = "1.0.1"
 
+PROG_NAME = "fixSeqPadding"
+
 def warnSeqSyntax(silent, basename, seq) :
     if not silent :
-        print(os.path.basename(sys.argv[0]),
+        print(PROG_NAME,
             ": warning: invalid range [", seq, "] for seq ", basename,
             file=sys.stderr, sep='')
 
@@ -157,13 +159,13 @@ def main():
         fixNumList = seqLister.expandSeq(simpleBadPadList, cruftList)
         if len(fixNumList) == 0 :
             if not args.silent :
-                print(os.path.basename(sys.argv[0]),
+                print(PROG_NAME,
                     ": error: invalid bad-padding list, use seqLister syntax",
                     file=sys.stderr, sep='')
             sys.exit(0)
         if len(cruftList) > 0 :
             if not args.silent :
-                print(os.path.basename(sys.argv[0]),
+                print(PROG_NAME,
                     ": error: invalid entries in the list of badly padded frames: ",
                     " ".join(cruftList),
                     file=sys.stderr, sep='')
@@ -198,7 +200,7 @@ def main():
         match = pattern.search(arg)
         if not match :
             if not args.silent :
-                print(os.path.basename(sys.argv[0]), ": warning: ", arg,
+                print(PROG_NAME, ": warning: ", arg,
                     " not a sequence or not in lsseq native format",
                     file=sys.stderr, sep='')
             continue
@@ -317,7 +319,7 @@ def main():
                     if len(fnumMatchList) > 1 and not args.silent :
                         sys.stdout.flush()
                         sys.stderr.flush()
-                        print(os.path.basename(sys.argv[0]), ": warning: ", correctName,
+                        print(PROG_NAME, ": warning: ", correctName,
                             " exists but there is a duplicate frame number ", fnum,
                             " with different padding",
                             file=sys.stderr, sep='')
@@ -328,7 +330,7 @@ def main():
                     if len(fnumMatchList) > 1 and not args.silent :
                         sys.stdout.flush()
                         sys.stderr.flush()
-                        print(os.path.basename(sys.argv[0]), ": warning: ", correctName,
+                        print(PROG_NAME, ": warning: ", correctName,
                             " corresponds to multiple files with bad-padding. Ambiguous rename. Skipping",
                             file=sys.stderr, sep='')
                         sys.stderr.flush()
