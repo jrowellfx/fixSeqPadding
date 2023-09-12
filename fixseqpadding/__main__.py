@@ -68,7 +68,7 @@ import seqLister
 
 VERSION = "1.0.1"
 
-PROG_NAME = "fixSeqPadding"
+PROG_NAME = "fixseqpadding"
 
 def warnSeqSyntax(silent, basename, seq) :
     if not silent :
