@@ -1,12 +1,15 @@
 ------ Begin Tests ------
 
---- Test 1 --- dir:. --- lsseq --version ---
-2.4.4
+--- Test 1 --- dir:. --- uname ---
+Linux
 
---- Test 2 --- dir:. --- fixseqpadding --version ---
+--- Test 2 --- dir:. --- lsseq --version ---
+2.7.1
+
+--- Test 3 --- dir:. --- fixseqpadding --version ---
 1.0.1
 
---- Test 3 --- dir:. --- lsseq -RPl --noErrorLists -g -m ---
+--- Test 4 --- dir:. --- lsseq -RPl --noErrorLists -g -m ---
 lsseq: warning: ./a01/a.0119.jpg is a duplicate (with different padding) of frame number: 119
 lsseq: warning: ./a01/a.00124.jpg is a duplicate (with different padding) of frame number: 124
 lsseq: warning: ./a01/a.00130.jpg is a duplicate (with different padding) of frame number: 130
@@ -20,7 +23,7 @@ lsseq: warning: ./b01/b.00130.jpg is a duplicate (with different padding) of fra
 ./b02/b.[100-125].jpg p:[101-125]
 ./b03/b.[100-125].jpg p:[101-125]
 
---- Test 4 --- dir:a01 --- ls -1 ---
+--- Test 5 --- dir:a01 --- ls -1 ---
 a.00124.jpg
 a.00130.jpg
 a.00131.jpg
@@ -59,13 +62,13 @@ a.105.jpg
 a.119.jpg
 a.130.jpg
 
---- Test 5 --- dir:a01 --- lsseq -n -g -m ---
+--- Test 6 --- dir:a01 --- lsseq -n -g -m ---
 lsseq: warning: a.0119.jpg is a duplicate (with different padding) of frame number: 119
 lsseq: warning: a.00124.jpg is a duplicate (with different padding) of frame number: 124
 lsseq: warning: a.00130.jpg is a duplicate (with different padding) of frame number: 130
 a.[0100-0140].jpg m:[101,134-139], p:[102-105,119,130-133,140]
 
---- Test 6 --- dir:a01 --- fixseqpadding --verbose a.[0100-0140].jpg ---
+--- Test 7 --- dir:a01 --- fixseqpadding --verbose a.[0100-0140].jpg ---
 fixseqpadding: warning: a.0119.jpg exists but there is a duplicate frame number 119 with different padding
 fixseqpadding: warning: a.0124.jpg exists but there is a duplicate frame number 124 with different padding
 fixseqpadding: warning: a.0130.jpg corresponds to multiple files with bad-padding. Ambiguous rename. Skipping
@@ -78,13 +81,13 @@ a.00132.jpg -> a.0132.jpg
 a.00133.jpg -> a.0133.jpg
 a.00140.jpg -> a.0140.jpg
 
---- Test 7 --- dir:a01 --- lsseq -n -g -m ---
+--- Test 8 --- dir:a01 --- lsseq -n -g -m ---
 lsseq: warning: a.0119.jpg is a duplicate (with different padding) of frame number: 119
 lsseq: warning: a.00124.jpg is a duplicate (with different padding) of frame number: 124
 lsseq: warning: a.00130.jpg is a duplicate (with different padding) of frame number: 130
 a.[0100-0140].jpg m:[101,134-139], p:[119,130]
 
---- Test 8 --- dir:a01 --- ls -1 ---
+--- Test 9 --- dir:a01 --- ls -1 ---
 a.00124.jpg
 a.00130.jpg
 a.0100.jpg
@@ -123,10 +126,10 @@ a.0140.jpg
 a.119.jpg
 a.130.jpg
 
---- Test 9 --- dir:a02 --- lsseq -g ---
+--- Test 10 --- dir:a02 --- lsseq -g ---
 a.[100-125].jpg z:[100-125], p:[101-125]
 
---- Test 10 --- dir:a02 --- fixseqpadding --verbose a.[100-125].jpg ---
+--- Test 11 --- dir:a02 --- fixseqpadding --verbose a.[100-125].jpg ---
 a.0101.jpg -> a.101.jpg
 a.0102.jpg -> a.102.jpg
 a.0103.jpg -> a.103.jpg
@@ -153,21 +156,21 @@ a.0123.jpg -> a.123.jpg
 a.0124.jpg -> a.124.jpg
 a.0125.jpg -> a.125.jpg
 
---- Test 11 --- dir:a02 --- lsseq -g ---
+--- Test 12 --- dir:a02 --- lsseq -g ---
 a.[100-125].jpg z:[100-125]
 
---- Test 12 --- dir:a03 --- lsseq -g ---
+--- Test 13 --- dir:a03 --- lsseq -g ---
 a.[100-125].jpg z:[100-125], p:[101-125]
 
---- Test 13 --- dir:a03 --- fixseqpadding --pad 4 --verbose a.[100-125].jpg ---
+--- Test 14 --- dir:a03 --- fixseqpadding --pad 4 --verbose a.[100-125].jpg ---
 a.100.jpg -> a.0100.jpg
 a.00120.jpg -> a.0120.jpg
 a.00125.jpg -> a.0125.jpg
 
---- Test 14 --- dir:a03 --- lsseq -g ---
+--- Test 15 --- dir:a03 --- lsseq -g ---
 a.[0100-0125].jpg z:[100-125]
 
---- Test 15 --- dir:. --- ls -1 b01 ---
+--- Test 16 --- dir:. --- ls -1 b01 ---
 b.00124.jpg
 b.00130.jpg
 b.00131.jpg
@@ -206,13 +209,13 @@ b.105.jpg
 b.119.jpg
 b.130.jpg
 
---- Test 16 --- dir:. --- lsseq -n -g -m b01 ---
+--- Test 17 --- dir:. --- lsseq -n -g -m b01 ---
 lsseq: warning: b.0119.jpg is a duplicate (with different padding) of frame number: 119
 lsseq: warning: b.00124.jpg is a duplicate (with different padding) of frame number: 124
 lsseq: warning: b.00130.jpg is a duplicate (with different padding) of frame number: 130
 b.[0100-0140].jpg m:[101,134-139], p:[102-105,119,130-133,140]
 
---- Test 17 --- dir:. --- fixseqpadding --verbose b01/b.[0100-0140].jpg ---
+--- Test 18 --- dir:. --- fixseqpadding --verbose b01/b.[0100-0140].jpg ---
 fixseqpadding: warning: b01/b.0119.jpg exists but there is a duplicate frame number 119 with different padding
 fixseqpadding: warning: b01/b.0124.jpg exists but there is a duplicate frame number 124 with different padding
 fixseqpadding: warning: b01/b.0130.jpg corresponds to multiple files with bad-padding. Ambiguous rename. Skipping
@@ -225,13 +228,13 @@ b01/b.00132.jpg -> b01/b.0132.jpg
 b01/b.00133.jpg -> b01/b.0133.jpg
 b01/b.00140.jpg -> b01/b.0140.jpg
 
---- Test 18 --- dir:. --- lsseq -n -g -m b01 ---
+--- Test 19 --- dir:. --- lsseq -n -g -m b01 ---
 lsseq: warning: b.0119.jpg is a duplicate (with different padding) of frame number: 119
 lsseq: warning: b.00124.jpg is a duplicate (with different padding) of frame number: 124
 lsseq: warning: b.00130.jpg is a duplicate (with different padding) of frame number: 130
 b.[0100-0140].jpg m:[101,134-139], p:[119,130]
 
---- Test 19 --- dir:. --- ls -1 b02 ---
+--- Test 20 --- dir:. --- ls -1 b02 ---
 b.0101.jpg
 b.0102.jpg
 b.0103.jpg
@@ -259,10 +262,10 @@ b.0124.jpg
 b.0125.jpg
 b.100.jpg
 
---- Test 20 --- dir:. --- lsseq -g b02 ---
+--- Test 21 --- dir:. --- lsseq -g b02 ---
 b.[100-125].jpg z:[100-125], p:[101-125]
 
---- Test 21 --- dir:. --- fixseqpadding --verbose b02/b.[100-125].jpg ---
+--- Test 22 --- dir:. --- fixseqpadding --verbose b02/b.[100-125].jpg ---
 b02/b.0101.jpg -> b02/b.101.jpg
 b02/b.0102.jpg -> b02/b.102.jpg
 b02/b.0103.jpg -> b02/b.103.jpg
@@ -289,16 +292,16 @@ b02/b.0123.jpg -> b02/b.123.jpg
 b02/b.0124.jpg -> b02/b.124.jpg
 b02/b.0125.jpg -> b02/b.125.jpg
 
---- Test 22 --- dir:. --- lsseq -g b02 ---
+--- Test 23 --- dir:. --- lsseq -g b02 ---
 b.[100-125].jpg z:[100-125]
 
---- Test 23 --- dir:. --- lsseq -g b03 ---
+--- Test 24 --- dir:. --- lsseq -g b03 ---
 b.[100-125].jpg z:[100-125], p:[101-125]
 
---- Test 24 --- dir:. --- fixseqpadding --pad 4 --verbose b03/b.[100-125].jpg ---
+--- Test 25 --- dir:. --- fixseqpadding --pad 4 --verbose b03/b.[100-125].jpg ---
 b03/b.100.jpg -> b03/b.0100.jpg
 b03/b.00120.jpg -> b03/b.0120.jpg
 b03/b.00125.jpg -> b03/b.0125.jpg
 
---- Test 25 --- dir:. --- lsseq -g b03 ---
+--- Test 26 --- dir:. --- lsseq -g b03 ---
 b.[0100-0125].jpg z:[100-125]
