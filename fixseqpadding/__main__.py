@@ -66,7 +66,7 @@ import glob
 
 import seqLister
 
-VERSION = "1.0.1"
+VERSION = "2.0.0"
 
 PROG_NAME = "fixseqpadding"
 
@@ -128,7 +128,7 @@ def main():
         an existing frame with a correctly padded name \
         then overwrite the frame. The opposite of --skip.")
     '''
-    p.add_argument("--dryRun", action="store_true",
+    p.add_argument("--dry-run", action="store_true",
         dest="dryRun", default=False,
         help="Don't fix the padding for SEQ, just display how the \
         files would have been renamed. Forces --verbose" )

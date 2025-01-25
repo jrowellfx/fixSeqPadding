@@ -166,29 +166,32 @@ cat << EOF > $tmpArgs
 .   uname
 .   lsseq --version                         # Double check which version being used for this test.
 .   fixseqpadding --version                         # Double check which version being used for this test.
-.   lsseq -RPl --noErrorLists -g -m         # List all sequences in the testdir
+.   lsseq -RPl --no-error-lists --show-bad-padding -m         # List all sequences in the testdir
 a01 ls -1
-a01 lsseq -n -g -m
+a01 lsseq -n --show-bad-padding -m
+a01 fixseqpadding --dry-run a.[0100-0140].jpg
 a01 fixseqpadding --verbose a.[0100-0140].jpg
-a01 lsseq -n -g -m
+a01 lsseq -n --show-bad-padding -m
 a01 ls -1
-a02 lsseq -g
+a02 lsseq --show-bad-padding
+a02 fixseqpadding --dry-run a.[100-125].jpg
 a02 fixseqpadding --verbose a.[100-125].jpg
-a02 lsseq -g
-a03 lsseq -g
+a02 lsseq --show-bad-padding
+a03 lsseq --show-bad-padding
+a03 fixseqpadding --pad 4 --dry-run a.[100-125].jpg
 a03 fixseqpadding --pad 4 --verbose a.[100-125].jpg
-a03 lsseq -g
+a03 lsseq --show-bad-padding
 . ls -1 b01
-. lsseq -n -g -m b01
+. lsseq -n --show-bad-padding -m b01
 . fixseqpadding --verbose b01/b.[0100-0140].jpg
-. lsseq -n -g -m b01
+. lsseq -n --show-bad-padding -m b01
 . ls -1 b02
-. lsseq -g b02
+. lsseq --show-bad-padding b02
 . fixseqpadding --verbose b02/b.[100-125].jpg
-. lsseq -g b02
-. lsseq -g b03
+. lsseq --show-bad-padding b02
+. lsseq --show-bad-padding b03
 . fixseqpadding --pad 4 --verbose b03/b.[100-125].jpg
-. lsseq -g b03
+. lsseq --show-bad-padding b03
 EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`
