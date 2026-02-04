@@ -166,6 +166,8 @@ cat << EOF > $tmpArgs
 .   uname
 .   lsseq --version                                    # Double check which version being used for this test.
 .   fixseqpadding --version                            # Double check which version being used for this test.
+.   fixseqpadding --xxxxxxx                            # Check usage message.
+.   fixseqpadding --help                               # Record --help message
 .   lsseq -RPl --no-error-lists --show-bad-padding -m  # List all sequences in the testdir
 a01 ls -1
 a01 lsseq -n --show-bad-padding -m

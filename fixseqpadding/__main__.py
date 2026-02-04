@@ -66,7 +66,7 @@ import glob
 
 import seqLister
 
-VERSION = "2.0.0"
+VERSION = "2.0.1"
 
 PROG_NAME = "fixseqpadding"
 
@@ -100,7 +100,7 @@ def main():
             by the padding of the smallest index specified in the SEQ argument
             or if --pad has been specified then force use of PAD digits.
             '''),
-        usage="%(prog)s [OPTION]... [SEQ]...")
+        usage="%(prog)s [-h | --help] [OPTION]... [SEQ]...")
 
     p.add_argument("--version", action="version", version=VERSION)
     p.add_argument("--fix", action="store",
